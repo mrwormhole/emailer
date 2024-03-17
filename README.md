@@ -9,12 +9,12 @@ as HTTP server so other microservices that belong to you can make easy email sen
 
 ### Supported providers
 
-[ ] Brevo (highly recommended)
-[ ] Postmark
-[ ] Mailchimp
-[ ] Mailtrap
-[ ] Mailjet
-[ ] Mailgun
-[ ] Sendgrid
+- [ ] Brevo (highly recommended)
+- [ ] Postmark
+- [ ] Mailchimp
+- [ ] Mailtrap
+- [ ] Mailjet
+- [ ] Mailgun
+- [ ] Sendgrid
 
 Note: Anything that only uses oauth2 like zoho does will not be implemented here for foreseeable future 
