@@ -61,7 +61,9 @@ func main() {
 	case strings.EqualFold(provider, "brevo"):
 		c := retryablehttp.NewClient()
 		c.RetryMax = 3
-		sender, err = brevo.New(key, c.StandardClient())
+		httpClient := c.StandardClient()
+		httpClient.Timeout = 10 * time.Second
+		sender, err = brevo.New(key, httpClient)
 		if err != nil {
 			slog.LogAttrs(context.Background(), slog.LevelError, "brevo.New()", slog.String("err", err.Error()))
 		}
