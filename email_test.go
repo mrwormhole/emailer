@@ -83,7 +83,6 @@ func TestValidationMsg(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			t.Parallel()
 			got := tt.email.ValidationMsg()
 			if diff := cmp.Diff(tt.want, got); diff != "" {
 				t.Errorf("ValidationMsg(): diff=\n %v", diff)
