@@ -3,9 +3,10 @@ package brevo
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/mrwormhole/emailer"
 	"log/slog"
 	"net/http"
+
+	"github.com/mrwormhole/emailer"
 )
 
 func EmailHandler(sender emailer.Sender) func(w http.ResponseWriter, r *http.Request) {
@@ -22,7 +23,7 @@ func EmailHandler(sender emailer.Sender) func(w http.ResponseWriter, r *http.Req
 		}
 
 		if err := sender.Send(r.Context(), e); err != nil {
-			slog.LogAttrs(r.Context(), slog.LevelError, "failed to send email", slog.String("err", err.Error()))
+			slog.LogAttrs(r.Context(), slog.LevelError, fmt.Sprintf("%T.Send(%v)", sender, e), slog.String("err", err.Error()))
 			http.Error(w, "Failed to send email", http.StatusInternalServerError)
 			return
 		}
