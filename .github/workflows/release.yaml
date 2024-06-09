@@ -4,6 +4,9 @@ on:
   push:
     tags:
       - 'v*.*.*'
+  pull_request:
+    branches:
+      - "main"
 
 permissions:
   contents: read
@@ -22,6 +25,8 @@ jobs:
 
     - name: Setup KO
       uses: ko-build/setup-ko@v0.6
+      env:
+        KO_DOCKER_REPO: ghcr.io/mrwormhole
 
     - name: Publish
       run: |
