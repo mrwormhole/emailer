@@ -9,7 +9,7 @@ as HTTP server so other microservices that belong to you can make email sending 
 
 ### Supported providers
 
-- [ ] Brevo (highly recommended)
+- [X] Brevo (highly recommended)
 - [ ] Resend
 - [ ] Postmark
 - [ ] Mailchimp
