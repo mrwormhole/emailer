@@ -1,4 +1,10 @@
-# emailer
+# Emailer
+
+[![Version](https://img.shields.io/github/tag/mrwormhole/emailer.svg)](https://github.com/mrwormhole/emailer/tags)
+[![CI Build](https://github.com/mrwormhole/emailer/actions/workflows/test.yaml/badge.svg)](https://github.com/mrwormhole/emailer/actions/workflows/test.yaml)
+[![GoDoc](https://godoc.org/github.com/mrwormhole/emailer?status.svg)](https://godoc.org/github.com/mrwormhole/emailer)
+[![Report Card](https://goreportcard.com/badge/github.com/mrwormhole/emailer)](https://goreportcard.com/report/github.com/mrwormhole/emailer)
+[![License](https://img.shields.io/github/license/mrwormhole/emailer)](https://github.com/mrwormhole/emailer/blob/master/LICENSE)
 
 tiny email server for managed email providers
 
