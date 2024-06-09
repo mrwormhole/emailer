@@ -27,8 +27,9 @@ jobs:
 
     - name: Setup KO
       uses: ko-build/setup-ko@v0.6
+      env:
+        KO_DOCKER_REPO: ghcr.io/mrwormhole/emailer
 
     - name: Publish
       run: |
-        export KO_DOCKER_REPO=ghcr.io/emailer
         ko build ./cmd/emailer --platform="linux/amd64,linux/arm64"
