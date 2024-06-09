@@ -21,24 +21,24 @@ type Email struct {
 
 func (e Email) ValidationMsg() string {
 	if strings.TrimSpace(e.From) == "" {
-		return "'from' field must not be blank"
-	}
-	if len(e.To) == 0 {
-		return "'to' field must not be blank"
-	}
-	if strings.TrimSpace(e.Subject) == "" {
-		return "'subject' field must not be blank"
-	}
-	if strings.TrimSpace(e.HTMLContent) == "" && strings.TrimSpace(e.TextContent) == "" {
-		return "either the 'htmlContent' or 'textContent' field must be filled"
+		return "from field must not be blank"
 	}
 	if !emailRegex.MatchString(e.From) {
 		return fmt.Sprintf("%q is not a valid email", e.From)
+	}
+	if len(e.To) == 0 {
+		return "to field must not be blank"
 	}
 	for _, s := range e.To {
 		if !emailRegex.MatchString(s) {
 			return fmt.Sprintf("%q is not a valid email", s)
 		}
+	}
+	if strings.TrimSpace(e.Subject) == "" {
+		return "subject field must not be blank"
+	}
+	if strings.TrimSpace(e.HTMLContent) == "" && strings.TrimSpace(e.TextContent) == "" {
+		return "either the htmlContent or textContent field must be filled"
 	}
 	for _, s := range e.BCC {
 		if !emailRegex.MatchString(s) {

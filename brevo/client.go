@@ -67,12 +67,11 @@ func (c *EmailClient) Send(ctx context.Context, email emailer.Email) error {
 	p.HTMLContent = email.HTMLContent
 	p.TextContent = email.TextContent
 
-	var buf bytes.Buffer
-	if err := json.NewEncoder(&buf).Encode(p); err != nil {
-		return fmt.Errorf("json.NewEncoder().Encode(%v): %v", p, err)
+	raw, err := json.Marshal(p)
+	if err != nil {
+		return fmt.Errorf("json.Marshal(%v): %v", p, err)
 	}
-
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, &buf)
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, bytes.NewBuffer(raw))
 	if err != nil {
 		return fmt.Errorf("http.NewRequestWithContext(): %v", err)
 	}
@@ -95,7 +94,7 @@ func (c *EmailClient) Send(ctx context.Context, email emailer.Email) error {
 	var cm CodeMessage
 	if err := json.NewDecoder(resp.Body).Decode(&cm); err != nil {
 		dump, _ := httputil.DumpResponse(resp, true)
-		return fmt.Errorf("json.NewDecoder(%v).Decode(): %v", dump, err)
+		return fmt.Errorf("json.NewDecoder(%v).Decode(): %v", string(dump), err)
 	}
 
 	return fmt.Errorf("unsuccessful response with status code(%d): %v", resp.StatusCode, cm)
