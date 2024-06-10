@@ -15,11 +15,16 @@ import (
 
 	"github.com/hashicorp/go-retryablehttp"
 
-	"github.com/mrwormhole/emailer"
 	"github.com/mrwormhole/emailer/brevo"
 )
 
 var debugEnabled = flag.Bool("debug", false, "in debug environment")
+
+const (
+	defaultPort = "5555"
+	// Providers Listed below
+	providerBrevo = "brevo"
+)
 
 func main() {
 	flag.Parse()
@@ -44,7 +49,7 @@ func main() {
 	}
 	port, ok := os.LookupEnv("PORT")
 	if !ok {
-		port = "5555"
+		port = defaultPort
 	}
 	portNum, err := strconv.Atoi(port)
 	if err != nil {
@@ -53,24 +58,25 @@ func main() {
 	}
 	provider, ok := os.LookupEnv("PROVIDER")
 	if !ok {
-		provider = "brevo"
+		provider = providerBrevo
 	}
 
-	var sender emailer.Sender
+	var handler http.HandlerFunc
 	switch {
-	case strings.EqualFold(provider, "brevo"):
+	case strings.EqualFold(provider, providerBrevo):
 		c := retryablehttp.NewClient()
 		c.RetryMax = 3
 		httpClient := c.StandardClient()
 		httpClient.Timeout = 10 * time.Second
-		sender, err = brevo.New(key, httpClient)
+		sender, err := brevo.New(key, httpClient)
 		if err != nil {
 			slog.LogAttrs(context.Background(), slog.LevelError, "brevo.New()", slog.String("err", err.Error()))
 		}
+		handler = brevo.EmailHandler(sender)
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("POST /email", brevo.EmailHandler(sender))
+	mux.HandleFunc("POST /email", handler)
 
 	srv := &http.Server{
 		Addr:    fmt.Sprintf("localhost:%d", portNum),
