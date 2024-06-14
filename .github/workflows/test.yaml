@@ -24,4 +24,12 @@ jobs:
           version: v1.57
 
       - name: Test
-        run: go test -race -v ./...
+        run: go test -race -covermode atomic -coverprofile=covprofile -v ./...
+
+      - name: Install Goveralls
+        run: go install github.com/mattn/goveralls@v0.0.12
+    
+      - name: Upload Coverage
+        env:
+          COVERALLS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: goveralls -coverprofile=covprofile -service=github
