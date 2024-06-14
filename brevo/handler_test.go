@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"errors"
 	"io"
 	"log/slog"
 	"net/http"
@@ -55,22 +54,6 @@ func TestEmailHandler_FailedValidation(t *testing.T) {
 	}
 }
 
-type RoundTripFunc func(req *http.Request) *http.Response
-
-func (f RoundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) {
-	return f(req), nil
-}
-
-type FaultyRoundTripFunc func(req *http.Request) *http.Response
-
-func (f FaultyRoundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) {
-	return f(req), errors.New("boom baby boom")
-}
-
-func NewTestClient[T RoundTripFunc | FaultyRoundTripFunc](tripper T) (*EmailClient, error) {
-	return New("key", &http.Client{Transport: http.RoundTripper(tripper)})
-}
-
 func TestEmailHandler_Success(t *testing.T) {
 	tripper := func(req *http.Request) *http.Response {
 		return &http.Response{
@@ -85,6 +68,8 @@ func TestEmailHandler_Success(t *testing.T) {
 	email := emailer.Email{
 		From:        "a@a.com",
 		To:          []string{"b@b.com"},
+		BCC:         []string{"bcc@bcc.com"},
+		CC:          []string{"cc@cc.com"},
 		Subject:     "sub",
 		HTMLContent: "html",
 	}
