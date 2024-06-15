@@ -9,6 +9,7 @@ import (
 	"github.com/mrwormhole/emailer"
 )
 
+// EmailHandler is opinionated/reusable HTTP handler for brevo provider
 func EmailHandler(sender emailer.Sender) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var e emailer.Email

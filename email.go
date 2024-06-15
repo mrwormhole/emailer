@@ -1,3 +1,4 @@
+// Package emailer provides shared foundation stones for email providers
 package emailer
 
 import (
@@ -9,6 +10,7 @@ import (
 
 var emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$`)
 
+// Email is generic email structure for all providers
 type Email struct {
 	From        string   `json:"from"`
 	To          []string `json:"to"`
@@ -19,6 +21,7 @@ type Email struct {
 	TextContent string   `json:"textContent"`
 }
 
+// ValidationMsg returns empty if all validations passed, else it will return failed validation message
 func (e Email) ValidationMsg() string {
 	if strings.TrimSpace(e.From) == "" {
 		return "from field must not be blank"
@@ -53,6 +56,7 @@ func (e Email) ValidationMsg() string {
 	return ""
 }
 
+// Sender is a behaviour for email senders
 type Sender interface {
 	Send(ctx context.Context, e Email) error
 }

@@ -61,13 +61,14 @@ func main() {
 		provider = providerBrevo
 	}
 
+	c := retryablehttp.NewClient()
+	c.RetryMax = 3
+	httpClient := c.StandardClient()
+	httpClient.Timeout = 10 * time.Second
+
 	var handler http.HandlerFunc
 	switch {
 	case strings.EqualFold(provider, providerBrevo):
-		c := retryablehttp.NewClient()
-		c.RetryMax = 3
-		httpClient := c.StandardClient()
-		httpClient.Timeout = 10 * time.Second
 		sender, err := brevo.New(key, httpClient)
 		if err != nil {
 			slog.LogAttrs(context.Background(), slog.LevelError, "brevo.New()", slog.String("err", err.Error()))
@@ -79,8 +80,10 @@ func main() {
 	mux.HandleFunc("POST /email", handler)
 
 	srv := &http.Server{
-		Addr:    fmt.Sprintf("localhost:%d", portNum),
-		Handler: mux,
+		Addr:         fmt.Sprintf("localhost:%d", portNum),
+		Handler:      mux,
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 5 * time.Second,
 	}
 
 	go func() {
