@@ -1,3 +1,20 @@
+// Package brevo makes it easy to send emails via brevo provider. This package follows [brevo spec] strictly.
+//
+// Example usage:
+//
+//	 email := emailer.Email{
+//		From:        "skywalker@jedi.com",
+//		To:          []string{"vindu@sith.com"},
+//		Subject:     "peace",
+//		TextContent: "peace was never an option",
+//	 }
+//	 c, err := New("api-key", &http.Client{})
+//		if err != nil {
+//			//check err
+//		}
+//	 c.Send(ctx, email)
+//
+// [brevo spec]: https://developers.brevo.com/reference/sendtransacemail
 package brevo
 
 import (
@@ -16,11 +33,13 @@ import (
 
 const endpoint = "https://api.brevo.com/v3/smtp/email"
 
+// EmailClient is brevo email client to interact with emails
 type EmailClient struct {
 	key    string
 	client *http.Client
 }
 
+// New creates a new brevo email client with given API key and http.Client
 func New(key string, client *http.Client) (*EmailClient, error) {
 	if strings.TrimSpace(key) == "" {
 		return nil, errors.New("brevo API key is blank")
@@ -32,10 +51,12 @@ func New(key string, client *http.Client) (*EmailClient, error) {
 	}, nil
 }
 
+// Detail is additional info about the person such as email and name
 type Detail struct {
 	Email string `json:"email"`
 }
 
+// Payload is a request that brevo uses to send email
 type Payload struct {
 	Sender      Detail   `json:"sender"`
 	To          []Detail `json:"to"`
@@ -46,11 +67,13 @@ type Payload struct {
 	TextContent string   `json:"textContent,omitempty"`
 }
 
+// CodeMessage is a response when brevo encounters a problem while sending email
 type CodeMessage struct {
 	Code    string `json:"code"`
 	Message string `json:"message"`
 }
 
+// Send sends a given email
 func (c *EmailClient) Send(ctx context.Context, email emailer.Email) error {
 	var p Payload
 	p.Sender.Email = email.From

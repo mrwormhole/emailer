@@ -57,7 +57,7 @@ func TestEmailHandler_FailedValidation(t *testing.T) {
 func TestEmailHandler_Success(t *testing.T) {
 	tripper := func(req *http.Request) *http.Response {
 		return &http.Response{
-			StatusCode: 200,
+			StatusCode: http.StatusOK,
 		}
 	}
 	client, err := NewTestClient[RoundTripFunc](tripper)
