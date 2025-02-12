@@ -70,8 +70,8 @@ type payload struct {
 
 // errorMessage is a response when brevo encounters a problem while sending email
 type errorMessage struct {
-	Code    string `json:"code"`
 	Message string `json:"message"`
+	Code    string `json:"code"`
 }
 
 // Send sends a given email

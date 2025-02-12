@@ -64,8 +64,8 @@ type payload struct {
 
 type errorMessage struct {
 	Message    string `json:"message"`
-	StatusCode int    `json:"statusCode"`
 	Name       string `json:"name"`
+	StatusCode int    `json:"statusCode"`
 }
 
 // Send sends a given email
