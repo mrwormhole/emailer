@@ -15,7 +15,7 @@ as HTTP endpoint so the other microservices that belong to you can make email re
 ### Supported providers
 
 - [X] Brevo (highly recommended)
-- [ ] Resend
+- [X] Resend
 - [ ] Postmark
 - [ ] Mailchimp
 - [ ] Mailtrap

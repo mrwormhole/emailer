@@ -11,14 +11,16 @@ import (
 // RoundTripFunc is transport layer of HTTP client
 type RoundTripFunc func(req *http.Request) *http.Response
 
-func (f RoundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) { //nolint:revive
+// RoundTrip satisfies http.RoundTripper for stubbing
+func (f RoundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) {
 	return f(req), nil
 }
 
 // FaultyRoundTripFunc is faulty transport layer of HTTP client
 type FaultyRoundTripFunc func(req *http.Request) *http.Response
 
-func (f FaultyRoundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) { //nolint:revive
+// RoundTrip satisfies http.RoundTripper for stubbing
+func (f FaultyRoundTripFunc) RoundTrip(req *http.Request) (*http.Response, error) {
 	return f(req), errors.New("boom baby boom")
 }
 
