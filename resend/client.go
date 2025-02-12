@@ -8,7 +8,7 @@
 //		Subject:     "peace",
 //		TextContent: "peace was never an option",
 //	 }
-//	 c, err := New(Config{key: "api-key"})
+//	 c, err := New(emailer.Config{key: "api-key"})
 //		if err != nil {
 //			//check err
 //		}
