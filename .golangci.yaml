@@ -111,4 +111,4 @@ issues:
 
 run:
   tests: true
-  timeout: 30s
+  timeout: 60s
