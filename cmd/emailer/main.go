@@ -15,7 +15,9 @@ import (
 
 	"github.com/hashicorp/go-retryablehttp"
 
+	"github.com/mrwormhole/emailer"
 	"github.com/mrwormhole/emailer/brevo"
+	"github.com/mrwormhole/emailer/resend"
 )
 
 var debugEnabled = flag.Bool("debug", false, "in debug environment")
@@ -23,7 +25,8 @@ var debugEnabled = flag.Bool("debug", false, "in debug environment")
 const (
 	defaultPort = "5555"
 	// Providers Listed below
-	providerBrevo = "brevo"
+	providerBrevo  = "brevo"
+	providerResend = "resend"
 )
 
 func main() {
@@ -66,28 +69,33 @@ func main() {
 	httpClient := c.StandardClient()
 	httpClient.Timeout = 10 * time.Second
 
-	var handler http.HandlerFunc
+	var sender emailer.Sender
 	switch {
 	case strings.EqualFold(provider, providerBrevo):
-		sender, err := brevo.New(key, httpClient)
+		slog.LogAttrs(context.Background(), slog.LevelDebug, "brevo.New()")
+		sender, err = brevo.New(emailer.Config{Key: key, Client: *httpClient})
 		if err != nil {
 			slog.LogAttrs(context.Background(), slog.LevelError, "brevo.New()", slog.String("err", err.Error()))
 		}
-		handler = brevo.EmailHandler(sender)
+	case strings.EqualFold(provider, providerResend):
+		slog.LogAttrs(context.Background(), slog.LevelDebug, "resend.New()")
+		sender, err = resend.New(emailer.Config{Key: key, Client: *httpClient})
+		if err != nil {
+			slog.LogAttrs(context.Background(), slog.LevelError, "resend.New()", slog.String("err", err.Error()))
+		}
 	}
 
 	mux := http.NewServeMux()
-	mux.HandleFunc("POST /email", handler)
-
+	mux.HandleFunc("POST /email", emailer.HandlerFunc(sender))
 	srv := &http.Server{
-		Addr:         fmt.Sprintf("localhost:%d", portNum),
+		Addr:         fmt.Sprintf(":%d", portNum),
 		Handler:      mux,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
 	}
 
 	go func() {
-		slog.Debug(fmt.Sprintf("server started at localhost:%d", portNum))
+		slog.Debug(fmt.Sprintf("server started at port %d", portNum))
 		if err := srv.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 			slog.LogAttrs(context.Background(), slog.LevelError, "srv.ListenAndServe()", slog.String("err", err.Error()))
 		}

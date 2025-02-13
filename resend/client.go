@@ -1,4 +1,4 @@
-// Package brevo makes it easy to send emails via brevo provider. This package follows [brevo spec] strictly.
+// Package resend makes it easy to send emails via resend provider. This package follows [resend spec] strictly.
 //
 // Example usage:
 //
@@ -14,8 +14,8 @@
 //		}
 //	 c.Send(ctx, email)
 //
-// [brevo spec]: https://developers.brevo.com/reference/sendtransacemail
-package brevo
+// [resend spec]: https://resend.com/docs/api-reference/emails/send-email
+package resend
 
 import (
 	"bytes"
@@ -31,20 +31,19 @@ import (
 	"github.com/mrwormhole/emailer"
 )
 
-const endpoint = "https://api.brevo.com/v3/smtp/email"
+const endpoint = "https://api.resend.com/emails"
 
-// EmailClient is brevo email client to interact with emails
+// EmailClient is resend email client to interact with emails
 type EmailClient struct {
 	key    string
 	client http.Client
 }
 
-// New creates a new brevo email client with given API key and http.Client
+// New creates a new resend email client with given API key and http.Client
 func New(c emailer.Config) (*EmailClient, error) {
 	if strings.TrimSpace(c.Key) == "" {
-		return nil, errors.New("brevo API key is blank")
+		return nil, errors.New("resend API key is blank")
 	}
-
 	e := &EmailClient{
 		key:    c.Key,
 		client: c.Client,
@@ -52,41 +51,30 @@ func New(c emailer.Config) (*EmailClient, error) {
 	return e, nil
 }
 
-// Detail is additional info about the person such as email and name
-type Detail struct {
-	Email string `json:"email"`
-}
-
-// payload is a request that brevo uses to send email
+// payload is a request that resend uses to send email
 type payload struct {
-	Sender      Detail   `json:"sender"`
-	To          []Detail `json:"to"`
-	BCC         []Detail `json:"bcc"`
-	CC          []Detail `json:"cc"`
+	From        string   `json:"from"`
+	To          []string `json:"to"`
+	BCC         []string `json:"bcc"`
+	CC          []string `json:"cc"`
 	Subject     string   `json:"subject"`
-	HTMLContent string   `json:"htmlContent,omitempty"`
-	TextContent string   `json:"textContent,omitempty"`
+	HTMLContent string   `json:"html,omitempty"`
+	TextContent string   `json:"text,omitempty"`
 }
 
-// errorMessage is a response when brevo encounters a problem while sending email
 type errorMessage struct {
-	Message string `json:"message"`
-	Code    string `json:"code"`
+	Message    string `json:"message"`
+	Name       string `json:"name"`
+	StatusCode int    `json:"statusCode"`
 }
 
 // Send sends a given email
 func (c *EmailClient) Send(ctx context.Context, email emailer.Email) error {
 	var p payload
-	p.Sender.Email = email.From
-	for _, e := range email.To {
-		p.To = append(p.To, Detail{Email: e})
-	}
-	for _, e := range email.BCC {
-		p.BCC = append(p.BCC, Detail{Email: e})
-	}
-	for _, e := range email.CC {
-		p.CC = append(p.CC, Detail{Email: e})
-	}
+	p.From = email.From
+	p.To = append(p.To, email.To...)
+	p.BCC = append(p.BCC, email.BCC...)
+	p.CC = append(p.CC, email.CC...)
 	p.Subject = email.Subject
 	p.HTMLContent = email.HTMLContent
 	p.TextContent = email.TextContent
@@ -99,7 +87,7 @@ func (c *EmailClient) Send(ctx context.Context, email emailer.Email) error {
 	if err != nil {
 		return fmt.Errorf("http.NewRequestWithContext(): %v", err)
 	}
-	req.Header.Add("api-key", c.key)
+	req.Header.Add("Authorization", "Bearer "+c.key)
 	req.Header.Add("accept", "application/json")
 	req.Header.Add("content-type", "application/json")
 

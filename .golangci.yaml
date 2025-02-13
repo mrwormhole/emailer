@@ -7,6 +7,18 @@ linters-settings:
     enable-all-rules: false # Enable all available rules.
     confidence: 0.8 # This means that linting errors with less than 0.8 confidence will be ignored.
     rules:
+      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#context-as-argument
+      - name: context-as-argument
+        severity: warning
+        disabled: false
+      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#defer
+      - name: defer
+        severity: warning
+        disabled: false
+      # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#unexported-return
+      - name: unexported-return
+        severity: warning
+        disabled: false
       # https://github.com/mgechev/revive/blob/master/RULES_DESCRIPTIONS.md#exported
       - name: exported
         severity: warning
@@ -31,6 +43,20 @@ linters-settings:
     allow-unused: false # report any unused nolint directives
     require-explanation: false # don't require an explanation for nolint directives
     require-specific: true # require nolint directives to be specific about which linter is being skipped
+  godox:
+    # Report any comments starting with keywords
+    keywords:
+      - TODO
+      - BUG
+      - FIXME
+      - OPTIMIZE
+      - HACK
+  usetesting:
+    # Enable/disable `os.CreateTemp("", ...)` `os.MkdirTemp()` `os.Setenv()` `os.TempDir()` detections.
+    os-create-temp: true
+    os-mkdir-temp: true
+    os-setenv: true
+    os-temp-dir: true
 
 linters:
   disable-all: true
@@ -42,15 +68,17 @@ linters:
     - bodyclose
     - ineffassign
     - errcheck
-    - typecheck
     - durationcheck
     - nilerr
     - nilnil
     - nolintlint
     - wrapcheck
     - sloglint
-    - noctx
     - interfacebloat
+    - gochecknoinits
+    - godox
+    - musttag
+    - recvcheck
 
     # common styling
     - gofmt
@@ -62,7 +90,9 @@ linters:
     - errname
     - forcetypeassert
     - predeclared
-    - tenv
+    - usetesting
+    - thelper
+    - tparallel
     - unconvert
     - unparam
     - unused
@@ -70,6 +100,11 @@ linters:
     - whitespace
     - stylecheck
     - revive
+
+    - containedctx
+    - contextcheck
+    - fatcontext
+    - noctx
 
 issues:
   exclude-use-default: false
