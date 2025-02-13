@@ -17,6 +17,7 @@ import (
 
 	"github.com/mrwormhole/emailer"
 	"github.com/mrwormhole/emailer/brevo"
+	"github.com/mrwormhole/emailer/resend"
 )
 
 var debugEnabled = flag.Bool("debug", false, "in debug environment")
@@ -71,12 +72,14 @@ func main() {
 	var sender emailer.Sender
 	switch {
 	case strings.EqualFold(provider, providerBrevo):
+		slog.LogAttrs(context.Background(), slog.LevelDebug, "brevo.New()")
 		sender, err = brevo.New(emailer.Config{Key: key, Client: *httpClient})
 		if err != nil {
 			slog.LogAttrs(context.Background(), slog.LevelError, "brevo.New()", slog.String("err", err.Error()))
 		}
 	case strings.EqualFold(provider, providerResend):
-		sender, err = brevo.New(emailer.Config{Key: key, Client: *httpClient})
+		slog.LogAttrs(context.Background(), slog.LevelDebug, "resend.New()")
+		sender, err = resend.New(emailer.Config{Key: key, Client: *httpClient})
 		if err != nil {
 			slog.LogAttrs(context.Background(), slog.LevelError, "resend.New()", slog.String("err", err.Error()))
 		}
@@ -85,7 +88,7 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /email", emailer.HandlerFunc(sender))
 	srv := &http.Server{
-		Addr:         fmt.Sprintf("%d", portNum),
+		Addr:         fmt.Sprintf(":%d", portNum),
 		Handler:      mux,
 		ReadTimeout:  5 * time.Second,
 		WriteTimeout: 5 * time.Second,
