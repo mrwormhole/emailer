@@ -32,4 +32,4 @@ jobs:
       - name: Upload Coverage
         env:
           COVERALLS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: goveralls -ignore=cmd/**/*.go -coverprofile=covprofile -service=github
+        run: goveralls -ignore=cmd/**/*.go,emailtest/ -coverprofile=covprofile -service=github
