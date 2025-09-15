@@ -5,14 +5,14 @@
 [![GoDoc](https://godoc.org/github.com/mrwormhole/emailer?status.svg)](https://godoc.org/github.com/mrwormhole/emailer)
 [![Report Card](https://goreportcard.com/badge/github.com/mrwormhole/emailer)](https://goreportcard.com/report/github.com/mrwormhole/emailer)
 [![License](https://img.shields.io/github/license/mrwormhole/emailer)](https://github.com/mrwormhole/emailer/blob/main/LICENSE)
-[![Coverage Status](https://coveralls.io/repos/github/mrwormhole/emailer/badge.svg?branch=main)](https://coveralls.io/github/mrwormhole/emailer?branch=main)
+[![Codecov](https://codecov.io/github/mrwormhole/emailer/graph/badge.svg?token=Q1CKXYDTBJ)](https://codecov.io/github/mrwormhole/emailer)
 
-### Purpose
+## Purpose
 
 Packaging SMTP(send only) APIs to a choosable option is the goal here, then to have a tiny server that picks 1 provider and serves
 as HTTP endpoint so the other microservices that belong to you can make email requests.
 
-### Supported providers
+## Supported providers
 
 - [X] Brevo (highly recommended)
 - [X] Resend
@@ -25,7 +25,7 @@ as HTTP endpoint so the other microservices that belong to you can make email re
 
 Note: Anything that only uses oauth2 like zoho does will not be implemented here for foreseeable future
 
-### Getting Started
+## Getting Started
 
 ```shell
   export API_KEY=<SECRET_API_KEY>
@@ -35,7 +35,7 @@ Note: Anything that only uses oauth2 like zoho does will not be implemented here
 
 Kick the server by after having `PROVIDER` and `API_KEY` env variables then run `go run ./cmd/emailer/main.go`
 
-##### Send Emails
+## API
 
 This endpoint allows you to send an email by providing the necessary email details in the request body as JSON.
 
