@@ -1,3 +1,20 @@
+// Package sendgrid makes it easy to send emails via sendgrid provider. This package follows [sendgrid spec] strictly.
+//
+// Example usage:
+//
+//	 email := emailer.Email{
+//		From:        "skywalker@jedi.com",
+//		To:          []string{"vindu@sith.com"},
+//		Subject:     "peace",
+//		TextContent: "peace was never an option",
+//	 }
+//	 c, err := New(emailer.Config{key: "api-key"})
+//		if err != nil {
+//			//check err
+//		}
+//	 c.Send(ctx, email)
+//
+// [sendgrid spec]: https://www.twilio.com/docs/sendgrid/api-reference/mail-send/mail-send
 package sendgrid
 
 import (
