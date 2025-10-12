@@ -18,6 +18,7 @@ import (
 	"github.com/mrwormhole/emailer"
 	"github.com/mrwormhole/emailer/brevo"
 	"github.com/mrwormhole/emailer/resend"
+	"github.com/mrwormhole/emailer/sendgrid"
 )
 
 var debugEnabled = flag.Bool("debug", false, "in debug environment")
@@ -25,8 +26,9 @@ var debugEnabled = flag.Bool("debug", false, "in debug environment")
 const (
 	defaultPort = "5555"
 	// Providers Listed below
-	providerBrevo  = "brevo"
-	providerResend = "resend"
+	providerBrevo    = "brevo"
+	providerResend   = "resend"
+	providerSendgrid = "sendgrid"
 )
 
 func main() {
@@ -69,20 +71,31 @@ func main() {
 	httpClient := c.StandardClient()
 	httpClient.Timeout = 10 * time.Second
 
+	ctx := context.Background()
 	var sender emailer.Sender
+	cfg := emailer.Config{Key: key, Client: *httpClient}
 	switch {
 	case strings.EqualFold(provider, providerBrevo):
-		slog.LogAttrs(context.Background(), slog.LevelDebug, "brevo.New()")
-		sender, err = brevo.New(emailer.Config{Key: key, Client: *httpClient})
+		slog.LogAttrs(ctx, slog.LevelDebug, "brevo.New()")
+		sender, err = brevo.New(cfg)
 		if err != nil {
-			slog.LogAttrs(context.Background(), slog.LevelError, "brevo.New()", slog.String("err", err.Error()))
+			slog.LogAttrs(ctx, slog.LevelError, "brevo.New()", slog.String("err", err.Error()))
 		}
 	case strings.EqualFold(provider, providerResend):
-		slog.LogAttrs(context.Background(), slog.LevelDebug, "resend.New()")
-		sender, err = resend.New(emailer.Config{Key: key, Client: *httpClient})
+		slog.LogAttrs(ctx, slog.LevelDebug, "resend.New()")
+		sender, err = resend.New(cfg)
 		if err != nil {
-			slog.LogAttrs(context.Background(), slog.LevelError, "resend.New()", slog.String("err", err.Error()))
+			slog.LogAttrs(ctx, slog.LevelError, "resend.New()", slog.String("err", err.Error()))
 		}
+	case strings.EqualFold(provider, providerSendgrid):
+		slog.LogAttrs(ctx, slog.LevelDebug, "sendgrid.New()")
+		sender, err = sendgrid.New(cfg)
+		if err != nil {
+			slog.LogAttrs(ctx, slog.LevelError, "sendgrid.New()", slog.String("err", err.Error()))
+		}
+	default:
+		slog.LogAttrs(ctx, slog.LevelError, "unknown provider", slog.String("provider", provider))
+		os.Exit(1)
 	}
 
 	mux := http.NewServeMux()
