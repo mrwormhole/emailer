@@ -21,6 +21,7 @@ as HTTP endpoint so the other microservices that belong to you can make email re
 - [ ] Mailtrap
 - [ ] Mailjet
 - [ ] Mailgun
+- [ ] Fastmail
 - [X] Sendgrid
 
 Note: Anything that only uses oauth2 like zoho does will not be implemented here for foreseeable future
